@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>ন্যারুটো বাংলা</title>
+  <style>
+    /* রিসেট ও বেসিক */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
+      background-color: #0a0f1e;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ---------- ব্যাকগ্রাউন্ড স্ক্রলিং (৫টি ছবি, ধীর গতি) ---------- */
+    .bg-scroll {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+      background-color: #000;
+    }
+
+    .scroll-track {
+      display: flex;
+      height: 100%;
+      width: auto;
+      animation: smoothScroll 60s linear infinite; /* ধীর গতি: 60 সেকেন্ড */
+    }
+
+    /* প্রতিটি ছবির স্টাইল - প্রতিটি ছবি পুরো স্ক্রিন জুড়ে দেখাবে */
+    .bg-img {
+      height: 100%;
+      width: 100vw; /* প্রতিটি ছবি পুরো ভিউপোর্টের সমান */
+      flex-shrink: 0;
+      object-fit: cover;
+    }
+
+    /* স্মুথ স্ক্রলিং অ্যানিমেশন - বাম থেকে ডানে */
+    @keyframes smoothScroll {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-500%); /* ৫টি ছবি = ৫০০% */
+      }
+    }
+
+    /* ডার্ক ওভারলে (বাটন ও লেখা স্পষ্ট রাখতে) */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0,0,0,0.7), rgba(0,0,0,0.5));
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* মূল কন্টেন্ট */
+    .content {
+      position: relative;
+      z-index: 15;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px 60px;
+    }
+
+    /* আইকন (স্থির) */
+    .icon {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 1200;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 50px;
+      padding: 8px 12px;
+      backdrop-filter: blur(5px);
+      transition: transform 0.2s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .icon:hover {
+      transform: scale(1.05);
+      background: rgba(0,0,0,0.8);
+    }
+    .icon img {
+      height: 38px;
+      width: auto;
+      display: block;
+      border-radius: 30px;
+    }
+
+    /* বাটন স্টাইল */
+    button, .apk-link {
+      border: 2px solid rgba(255,255,240,0.8);
+      border-radius: 60px;
+      height: 95px;
+      width: 300px;
+      font-weight: bold;
+      font-size: 1rem;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      font-family: inherit;
+      margin: 8px 0;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.4;
+    }
+    button:active, .apk-link:active {
+      transform: scale(0.97);
+    }
+    button:hover, .apk-link:hover {
+      filter: brightness(1.08);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.5);
+    }
+    
+    .btn-naruto {
+      background: linear-gradient(135deg, #2e7d32, #1b5e20);
+      color: white;
+    }
+    .btn-shippuden {
+      background: linear-gradient(135deg, #c62828, #8b0000);
+      color: white;
+    }
+    .btn-admin {
+      background: linear-gradient(135deg, #1565c0, #0d47a1);
+      color: white;
+    }
+    .btn-admin-help {
+      background: linear-gradient(135deg, #ff8c00, #e65100);
+      color: white;
+    }
+    .apk-link {
+      background: linear-gradient(135deg, #ff5722, #f4511e);
+      color: white;
+    }
+    .btn-buroto {
+      background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+      color: white;
+    }
+
+    /* বাটন প্যানেল */
+    .button-panel {
+      text-align: center;
+      margin: 20px 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* ছোট স্ক্রিনের জন্য */
+    @media (max-width: 600px) {
+      button, .apk-link {
+        width: 260px;
+        height: 85px;
+        font-size: 0.85rem;
+      }
+      .icon img {
+        height: 32px;
+      }
+    }
+
+    @media (max-width: 450px) {
+      button, .apk-link {
+        width: 240px;
+        height: 80px;
+        font-size: 0.8rem;
+      }
+    }
+
+    .credit-note {
+      text-align: center;
+      margin-top: 25px;
+      color: rgba(255,255,200,0.9);
+      font-size: 0.75rem;
+      background: rgba(0,0,0,0.5);
+      padding: 8px 18px;
+      border-radius: 40px;
+      backdrop-filter: blur(4px);
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ব্যাকগ্রাউন্ড স্ক্রলিং - ৫টি ছবি ধীর গতিতে -->
+<div class="bg-scroll">
+  <div class="scroll-track" id="scrollTrack"></div>
+</div>
+<div class="overlay"></div>
+
+<!-- স্থির আইকন -->
+<a href="second.html" class="icon">
+  <img src="icon1.png" alt="icon">
+</a>
+
+<!-- মূল কন্টেন্ট -->
+<div class="content">
+  <div class="button-panel">
+    <button class="btn-naruto" onclick="btn1()">🔥 CLICK HERE TO WATCH NARUTO 🔥</button>
+    <button class="btn-shippuden" onclick="btn2()">⚡ CLICK HERE TO WATCH NARUTO SHIPPUDEN ⚡</button>
+    <button class="btn-admin" onclick="admin()">👑 ADMIN LOGIN 👑</button>
+    <button class="btn-admin-help" onclick="adminHelp()">🛠️ ADMIN HELP 🛠️</button>
+    <a href="https://github.com/SaadSikder01/naruto/releases/download/naruto/naruto.apk" class="apk-link">
+      📲 DOWNLOAD / UPDATE "NARUTO" ANDROID APP 📲
+    </a>
+    <button class="btn-buroto" onclick="boruto()">🌀 CLICK HERE TO WATCH BORUTO 🌀</button>
+  </div>
+  
+ 
+</div>
+
+<script>
+  // ========== ৫টি ছবির ব্যাকগ্রাউন্ড স্ক্রলিং ==========
+  // ছবির নামের তালিকা (একই ফোল্ডারে থাকতে হবে)
+  const imageFiles = ['a1.jpg', 'a2.jpg', 'a3.jpg', 'a4.jpg', 'a5.jpg'];
+  
+  function buildScrollBackground() {
+    const track = document.getElementById('scrollTrack');
+    if (!track) return;
+    
+    // পরিষ্কার করে শুরু
+    track.innerHTML = '';
+    
+    // ৫টি ছবি যোগ করুন (শুধু একবার, কিন্তু CSS অ্যানিমেশন 500% ট্রান্সলেট করবে)
+    // এতে প্রতিটি ছবি পুরো স্ক্রিন জুড়ে দেখাবে এবং ৫টি ছবি পরপর স্ক্রল হবে
+    imageFiles.forEach((imgName, index) => {
+      const img = document.createElement('img');
+      img.src = imgName;
+      img.classList.add('bg-img');
+      img.alt = `Naruto Background ${index + 1}`;
+      img.style.width = '100vw';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      
+      // ছবি লোড না হলে ব্যাকগ্রাউন্ড কালার দেখাবে
+      img.onerror = function() {
+        this.style.backgroundColor = '#1a1a2e';
+        this.style.backgroundImage = `linear-gradient(135deg, #1a1a2e, #16213e)`;
+        this.style.objectFit = 'cover';
+        console.warn(`ছবি লোড হয়নি: ${imgName}`);
+      };
+      
+      track.appendChild(img);
+    });
+    
+    // মোট কতটি ছবি যোগ হয়েছে তা কনসোলে দেখান
+    console.log(`✅ মোট ${track.children.length}টি ছবি ব্যাকগ্রাউন্ডে যুক্ত হয়েছে`);
+    console.log(`📸 ছবির তালিকা: ${imageFiles.join(', ')}`);
+  }
+  
+  // অ্যানিমেশন স্পিড কন্ট্রোল (চাইলে গতি পরিবর্তন করতে পারেন)
+  // বর্তমানে 60 সেকেন্ডে পুরো 5টি ছবি স্ক্রল হবে
+  // গতি কমাতে চাইলে 45s বা 50s, গতি বাড়াতে চাইলে 70s বা 80s করুন
+  
+  // পেজ লোড হলে ব্যাকগ্রাউন্ড তৈরি করুন
+  window.addEventListener('DOMContentLoaded', buildScrollBackground);
+  
+  // নেভিগেশন ফাংশন
+  function btn1() {
+    window.location.href = "naruto1.html";
+  }
+  
+  function btn2() {
+    window.location.href = "narutoshippuden.html";
+  }
+  
+  function admin() {
+    window.location.href = "loginpage.html";
+  }
+  
+  function adminHelp() {
+    window.location.href = "admin.html";
+  }
+  
+  function boruto() {
+    window.location.href = "boruto.html";
+  }
+  
+  // গ্লোবাল স্কোপে ফাংশন রাখা
+  window.btn1 = btn1;
+  window.btn2 = btn2;
+  window.admin = admin;
+  window.adminHelp = adminHelp;
+  window.buroto = buroto;
+  
+  // পেজ ভিজিবিলিটি হ্যান্ডলিং (অ্যানিমেশন থামানো/চালু করা)
+  let scrollTrackElem = document.getElementById('scrollTrack');
+  document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+      if (scrollTrackElem) {
+        scrollTrackElem.style.animationPlayState = 'paused';
+      }
+    } else {
+      if (scrollTrackElem) {
+        scrollTrackElem.style.animationPlayState = 'running';
+      }
+    }
+  });
+  
+  // পেজ লোড সম্পূর্ণ হলে ছবি চেক করুন
+  window.addEventListener('load', function() {
+    const images = document.querySelectorAll('.bg-img');
+    console.log(`🖼️ পেজ লোড সম্পূর্ণ: ${images.length}টি ছবি ব্যাকগ্রাউন্ডে রয়েছে`);
+    
+    // ছবির নাম কনসোলে দেখান
+    images.forEach((img, idx) => {
+      console.log(`  ছবি ${idx + 1}: ${img.src.split('/').pop()}`);
+    });
+  });
+</script>
+</body>
+</html>

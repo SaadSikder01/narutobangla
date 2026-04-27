@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+/* ১ - লোডার (অপরিবর্তিত) */
+.loading {
+    position: fixed;
+    inset: 0;
+    background: white;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+.loading svg polyline {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.loading svg polyline#back {
+  stroke: #ff4d5033;
+}
+.loading svg polyline#front {
+  stroke: #ff4d4f;
+  stroke-dasharray: 48, 144;
+  stroke-dashoffset: 192;
+  animation: dash_682 1.4s linear infinite;
+}
+@keyframes dash_682 {
+  72.5% { opacity: 0; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* ২ - স্প্ল্যাশ স্ক্রিন */
+.splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.6s ease;
+    opacity: 1;
+}
+.splash-screen img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.splash-screen.fade-out {
+    opacity: 0;
+    pointer-events: none;
+}
+.splash-screen.hidden {
+    display: none;
+}
+
+/* ৩ - মূল স্টাইল */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+#bgVideo {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+.box {
+    margin-left: 550px;
+    margin-top: 300px;
+    height: 100px;
+    width: 200px;
+    position: fixed;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(5px);
+    padding: 5%;
+    border: 0.5px solid black;
+    border-radius: 20px;
+    box-shadow: 5px 5px 15px black;
+}
+@media(max-width: 480px) {
+    .box {
+        margin-left: 16%;
+        padding: 5%;
+        margin-top: 40%;
+        width: 70%;
+    }
+}
+.submit {
+    height: 30px;
+    width: 60px;
+    background-color: red;
+    border: 0.5px solid red;
+    border-radius: 20px;
+    font-weight: bold;
+    color: white;
+}
+.input {
+    height: 25px;
+    width: 200px;
+    border: 0.5px solid black;
+    border-radius: 10px;
+    background-color: rgba(255,255,255,0.2);
+    backdrop-filter: blur(5px);
+}
+#soundBtn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.3);
+    backdrop-filter: blur(5px);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 0 10px black;
+    z-index: 50;
+}
+.submit:active {
+    background: blue;
+}
+</style>
+</head>
+<body>
+
+<!-- স্প্ল্যাশ স্ক্রিন -->
+<div id="splashScreen" class="splash-screen">
+    <img id="splashImg" alt="splash">
+</div>
+
+<!-- লোডার -->
+<div class="loading" id="loader">
+  <svg width="64px" height="48px">
+    <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="back"></polyline>
+    <polyline points="0.157 23.954, 14 23.954, 21.843 48, 43 0, 50 24, 64 24" id="front"></polyline>
+  </svg>
+</div>
+
+<!-- অডিও -->
+<audio id="bgMusic" autoplay muted loop>
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<!-- সাউন্ড বাটন -->
+<div id="soundBtn" onclick="toggleSound()">🔇</div>
+
+<!-- লগইন বক্স -->
+<div class="box">
+    <marquee direction="scroll">
+        একটি সঠিক ইউজার আইডি দিয়ে লগইন করুন। যদি ইউজার আইডি না থাকে তবে (admin) লিখে লগইন করে রেজিস্ট্রেশ করুন।
+    </marquee>
+    <input type="password" id="input" class="input" placeholder="সঠিক ইউজার আইডি দিন" required>
+    <br><br>
+    <input type="submit" value="log in" id="butn" onclick="saad()" class="submit">
+</div>
+
+<!-- ভিডিও -->
+<video autoplay muted loop playsinline id="bgVideo">
+  <source src="naruto for bg.mp4" type="video/mp4">
+</video>
+
+<script>
+// ========= স্প্ল্যাশ স্ক্রিন =========
+function setSplashImage() {
+    const splashImg = document.getElementById('splashImg');
+    let isMobile = window.innerWidth <= 768;
+   
+    const ua = navigator.userAgent.toLowerCase();
+    if (/android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua)) {
+        isMobile = true;
+    }
+   
+    splashImg.src = isMobile ? "sp1.jpg" : "sp2.jpg";
+   
+    const fadeDelay = 2000;
+    if (splashImg.complete) {
+        setTimeout(fadeOutSplash, fadeDelay);
+    } else {
+        splashImg.onload = () => setTimeout(fadeOutSplash, fadeDelay);
+        splashImg.onerror = () => setTimeout(fadeOutSplash, fadeDelay);
+    }
+}
+
+function fadeOutSplash() {
+    const splash = document.getElementById('splashScreen');
+    splash.classList.add('fade-out');
+    setTimeout(() => splash.classList.add('hidden'), 600);
+}
+
+// ========= সাউন্ড টগল =========
+function toggleSound() {
+    const music = document.getElementById("bgMusic");
+    const btn = document.getElementById("soundBtn");
+    if (music.muted) {
+        music.muted = false;
+        btn.innerHTML = "🔊";
+    } else {
+        music.muted = true;
+        btn.innerHTML = "🔇";
+    }
+}
+
+// ========= লগইন ফাংশন (সংশোধিত) =========
+async function saad() {
+    const input = document.getElementById("input").value.trim();
+    const loader = document.getElementById("loader");
+    const apiURL = "https://script.google.com/macros/s/AKfycbwZ7vsFRGKf5K5UVFSmlHNDuu_svUiwq-7TGybxDIjx9bS5mixp7k0AdXrDTwxNfg-j/exec";
+
+    if (!input) {
+        alert("ইউজার আইডি দিন!");
+        return;
+    }
+
+    loader.style.display = "flex";
+
+    try {
+        let response = await fetch(apiURL);
+        let users = await response.json();
+
+        if (users.includes(input)) {
+            window.location.href = "second.html";
+        } 
+        else if (input.toLowerCase() === "admin") {
+            window.location.href = "admin.html";
+        } 
+        else {
+            loader.style.display = "none";
+            alert("ইউজার খুজে পাওয়া যাচ্ছে না! দয়া করে সঠিক তথ্য দিয়ে লগইন করুন।");
+        }
+    } catch (error) {
+        loader.style.display = "none";
+        alert("সার্ভারের সাথে সংযোগ করা যাচ্ছে না! পরে আবার চেষ্টা করুন।");
+        console.error(error);
+    }
+}
+
+// ========= পৃষ্ঠা লোড =========
+window.addEventListener("DOMContentLoaded", function() {
+    setSplashImage();
+   
+    const video = document.getElementById("bgVideo");
+    if (video) {
+        video.play().catch(e => console.log("ভিডিও অটোপ্লে:", e.message));
+    }
+   
+    // এন্টার কী সাপোর্ট
+    const inputField = document.getElementById("input");
+    inputField.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            document.getElementById("butn").click();
+        }
+    });
+});
+</script>
+</body>
+</html>

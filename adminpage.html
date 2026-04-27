@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Panel - Video Site</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { --yt-red: #ff0000; --bg-gray: #f9f9f9; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--bg-gray); display: flex; flex-direction: column; }
+
+        /* Sidebar & Navigation */
+        .sidebar { 
+            width: 250px; background: #fff; height: 100vh; 
+            border-right: 1px solid #ddd; padding: 20px; 
+            position: fixed; z-index: 100;
+        }
+        .sidebar h2 { color: var(--yt-red); margin-bottom: 30px; font-size: 24px; }
+        .sidebar a { 
+            display: flex; align-items: center; padding: 12px; 
+            color: #333; text-decoration: none; border-radius: 8px; 
+            margin-bottom: 8px; font-weight: 500; transition: 0.3s;
+        }
+        .sidebar a:hover { background: #f0f0f0; }
+        .active-nav { background: var(--yt-red) !important; color: white !important; }
+
+        /* Main Content */
+        .main-content { margin-left: 270px; padding: 40px; flex: 1; transition: 0.3s; }
+        .upload-box { 
+            background: white; padding: 30px; border-radius: 15px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); max-width: 550px; margin: 0 auto; 
+        }
+        h3 { margin-top: 0; color: #444; }
+
+        /* Form Elements */
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; color: #555; font-size: 14px; }
+        input[type="text"], input[type="file"] { 
+            width: 100%; padding: 12px; border: 1px solid #ddd; 
+            border-radius: 8px; box-sizing: border-box; outline: none; background: #fcfcfc;
+        }
+        button { 
+            background: var(--yt-red); color: white; border: none; 
+            padding: 15px; width: 100%; border-radius: 8px; 
+            cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s;
+        }
+        button:hover { background: #cc0000; box-shadow: 0 4px 10px rgba(255, 0, 0, 0.2); }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+
+        #status { margin-top: 15px; font-size: 14px; text-align: center; font-weight: 500; }
+
+        /* RESPONSIVE DESIGN (মোবাইলের জন্য) */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { 
+                width: 100%; height: auto; position: relative; 
+                padding: 10px; border-right: none; border-bottom: 1px solid #ddd;
+                box-sizing: border-box;
+            }
+            .sidebar h2 { margin-bottom: 15px; text-align: center; }
+            .sidebar-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
+            .sidebar a { padding: 8px 12px; font-size: 13px; margin-bottom: 0; }
+            
+            .main-content { margin-left: 0; padding: 20px; }
+            .upload-box { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h2>Admin Panel</h2>
+    <div class="sidebar-links">
+        <a href="index.html" class="active-nav">🏠 হোম </a>
+        <a href="dashboard.html">📊 ড্যাশবোর্ড</a>
+        <a href="user.html">👤 Add or Remove User</a>
+        <a href="naruto1.html">🌐 ভিডিও দেখুন</a>
+        <a href="userlist.html" style = "background:lightblue">User List</a>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="upload-box">
+        <h3>Publish a New Video</h3>
+        
+        <div class="input-group">
+            <label>ভিডিওর শিরোনাম</label>
+            <input type="text" id="videoTitle" placeholder="Add a Title">
+        </div>
+
+        <div class="input-group">
+            <label>ভিডিও থাম্বনেইল (ছবি)</label>
+            <input type="file" id="thumbFile" accept="image/*">
+        </div>
+
+        <div class="input-group">
+            <label>ভিডিও ফাইল</label>
+            <input type="file" id="videoFile" accept="video/*">
+        </div>
+
+        <button id="uploadBtn" onclick="uploadData()">পাবলিশ করুন</button>
+        <p id="status"></p>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = "https://zlzpfnhnfhtanuvaskjy.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpsenBmbmhuZmh0YW51dmFza2p5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0OTcwOTYsImV4cCI6MjA5MjA3MzA5Nn0.u9E9HROJw3kPBu5jgoLs4ZUXHeT8XMefLRw-pChOyTs";
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function uploadData() {
+        const title = document.getElementById('videoTitle').value;
+        const vFile = document.getElementById('videoFile').files[0];
+        const tFile = document.getElementById('thumbFile').files[0];
+        const status = document.getElementById('status');
+        const btn = document.getElementById('uploadBtn');
+
+        if(!title || !vFile || !tFile) return alert("সবগুলো ঘর পূরণ করুন (টাইটেল, ছবি এবং ভিডিও)!");
+
+        // বাটন ডিজেবল করা
+        btn.disabled = true;
+        status.style.color = "blue";
+        status.innerText = "ফাইল আপলোড হচ্ছে, দয়া করে অপেক্ষা করুন...";
+
+        try {
+            const timePrefix = Date.now();
+            
+            // ১. থাম্বনেইল আপলোড
+            const thumbName = `thumbs/${timePrefix}_${tFile.name}`;
+            const { data: tData, error: tErr } = await _supabase.storage.from('naruto').upload(thumbName, tFile);
+            if(tErr) throw tErr;
+            const thumbUrl = _supabase.storage.from('naruto').getPublicUrl(thumbName).data.publicUrl;
+
+            // ২. ভিডিও আপলোড
+            const videoName = `videos/${timePrefix}_${vFile.name}`;
+            const { data: vData, error: vErr } = await _supabase.storage.from('naruto').upload(videoName, vFile);
+            if(vErr) throw vErr;
+            const videoUrl = _supabase.storage.from('naruto').getPublicUrl(videoName).data.publicUrl;
+
+            // ৩. ডাটাবেসে সেভ করা
+            const { error: dbErr } = await _supabase.from('video_list').insert([
+                { 
+                    title: title, 
+                    url: videoUrl, 
+                    thumbnail: thumbUrl // ডাটাবেসে 'thumbnail' কলাম থাকতে হবে
+                }
+            ]);
+
+            if(dbErr) throw dbErr;
+
+            status.style.color = "green";
+            status.innerText = "সফলভাবে পাবলিশ হয়েছে!";
+            
+            // ইনপুট ক্লিয়ার করা
+            document.getElementById('videoTitle').value = "";
+            document.getElementById('videoFile').value = "";
+            document.getElementById('thumbFile').value = "";
+
+        } catch (error) {
+            alert("Error: " + error.message);
+            status.style.color = "red";
+            status.innerText = "আপলোড ব্যর্থ হয়েছে।";
+        } finally {
+            btn.disabled = false;
+        }
+    }
+</script>
+</body>
+</html>

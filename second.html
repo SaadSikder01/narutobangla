@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>স্বাগতম!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        p {
+            font-size: 22px;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+        .btn {
+            padding: 14px 32px;
+            font-size: 18px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+        }
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-3px);
+        }
+        .naruto {
+            background: #3498db;
+            color: white;
+        }
+        .naruto:hover {
+            background: #2980b9;
+            transform: translateY(-3px);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Overlay */
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #fff;
+            color: #333;
+            width: 90%;
+            max-width: 380px;
+            border-radius: 20px;
+            padding: 25px 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            line-height: 30px;
+        }
+        .close-btn:hover {
+            background: #c0392b;
+        }
+        .modal p {
+            font-size: 17px;
+            line-height: 1.5;
+            margin: 20px 0;
+            color: #444;
+        }
+        .ok-btn {
+            background: #27ae60;
+            color: white;
+            padding: 12px 40px;
+            font-size: 16px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+        }
+        .ok-btn:hover {
+            background: #219653;
+        }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 38px; }
+            p { font-size: 19px; }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="saad"></h1>
+    <p>আপনি সফলভাবে লগইন করেছেন।</p>
+    
+    <div>
+        <button class="btn logout-btn" onclick="logout()">লগ আউট</button>
+        <button onclick="showAgreement()" class="btn naruto">অগ্রসর হোন</button>
+    </div>
+
+    <!-- User Agreement Modal -->
+    <div id="useragreement" class="modal">
+        <div class="modal-content">
+            <button onclick="hideAgreement()" class="close-btn">✕</button>
+            
+            <p>আপনি অগ্রসর হচ্ছেন মানে আমাদের <a href="rule.html" target="_blank" style="color:#2980b9;">নিয়মনীতির</a> সাথে একমত হয়ে অগ্রসর হচ্ছেন।</p>
+            <button onclick="acceptAgreement()" class="ok-btn">ঠিক আছে</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/typed.js@2.1.0/dist/typed.umd.js"></script>
+    <script>
+        // Typed.js Initialization
+        var typed = new Typed('.saad', {
+            strings: ["স্বাগতম", "Welcome!"],
+            typeSpeed: 100,
+            backSpeed: 80,
+            loop: true,
+            showCursor: true
+        });
+
+        function logout() {
+            window.location.href = 'index.html';
+        }
+
+        function showAgreement() {
+            document.getElementById("useragreement").style.display = "flex";
+        }
+
+        function hideAgreement() {
+            document.getElementById("useragreement").style.display = "none";
+        }
+
+        function acceptAgreement() {
+            hideAgreement();
+            window.location.href = "naruto.html";
+        }
+
+        // ESC key দিয়ে modal বন্ধ করা যাবে
+        document.addEventListener('keydown', function(e) {
+            if (e.key === "Escape") {
+                hideAgreement();
+            }
+        });
+    </script>
+</body>
+</html>
