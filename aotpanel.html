@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drive Uploader</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; text-align: center; padding: 50px; }
+        .box { background: white; padding: 30px; border-radius: 10px; display: inline-block; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        button { background: #28a745; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; margin-top: 10px; }
+        button:disabled { background: #ccc; }
+        #msg { margin-top: 15px; font-weight: bold; }
+    </style>
+</head>
+<body>
+<a href = "user.html">Add User</a>
+<div class="box">
+    <h2>ভিডিও পাবলিশ করুন</h2>
+    <input type="file" id="fileInput"><br>
+    <button id="btn" onclick="uploadFile()">আপলোড করুন</button>
+    <div id="msg">ফাইল সিলেক্ট করুন</div>
+</div>
+
+<script>
+    // আপনার প্রাপ্ত Web App URL টি এখানে বসান
+    const scriptURL = "https://script.google.com/macros/s/AKfycbz9muMhRPxzxPiTVUiGWZPkePcJafY896tyLV9tZS_tdYec9YHenitjk23bIakBAJ2izg/exec";
+
+    function uploadFile() {
+        const fileInput = document.getElementById('fileInput');
+        const btn = document.getElementById('btn');
+        const msg = document.getElementById('msg');
+
+        if (fileInput.files.length === 0) return alert("ফাইল সিলেক্ট করুন!");
+
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+
+        msg.innerText = "আপলোড হচ্ছে... অপেক্ষা করুন।";
+        btn.disabled = true;
+
+        reader.onload = function() {
+            // শুধুমাত্র Base64 অংশটুকু নেওয়া
+            const base64String = reader.result.split(',')[1];
+            
+            const payload = {
+                base64: base64String,
+                type: file.type,
+                name: file.name
+            };
+
+            fetch(scriptURL, {
+                method: "POST",
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.text())
+            .then(data => {
+                msg.innerText = data;
+                msg.style.color = "green";
+                btn.disabled = false;
+                fileInput.value = "";
+            })
+            .catch(err => {
+                msg.innerText = "ভুল হয়েছে! আবার চেষ্টা করুন।";
+                msg.style.color = "red";
+                btn.disabled = false;
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+</script>
+</body>
+</html>
