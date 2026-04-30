@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buroto</title>
+    <style>
+        body {
+            background: #ffebe6;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+        }
+        h1 {
+            color: #333;
+        }
+        #typing {
+            font-size: 28px;
+            color: #e74c3c;
+            min-height: 80px;   /* অ্যানিমেশনের জন্য জায়গা রাখা */
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Can't Show Boruto for now but we are still working</h1>
+    
+    <h2 id="typing"></h2>
+    
+    <h3>Or <a href="admin.html">click here</a> to talk with an admin</h3>
+
+    <!-- Typed.js লাইব্রেরি (সবচেয়ে নতুন ও স্থিতিশীল ভার্সন) -->
+    <script src="https://unpkg.com/typed.js@3.0.0/dist/typed.umd.js"></script>
+
+    <script>
+        var typed = new Typed('#typing', {
+            strings: [
+                'Server not connected...',
+                'Please wait until...',
+                'Server is connecting...',
+                'Ready to Watch Boruto!'
+            ],
+            typeSpeed: 70,      // টাইপিং এর গতি
+            backSpeed: 50,      // মুছে ফেলার গতি
+            backDelay: 1500,    // একটা লেখা শেষ হলে কতক্ষণ অপেক্ষা করবে
+            loop: true,         // বারবার চলবে
+            showCursor: true,
+            cursorChar: '|',
+            smartBackspace: true
+        });
+    </script>
+
+</body>
+</html>
