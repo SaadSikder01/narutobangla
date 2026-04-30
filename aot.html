@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Naruto Shippuden</title>
+  <meta name = "viewport" content = "width=device-width, initile-scale = 1.0">
+  <style>
+    body { font-family: Arial; background:white; color:black; }
+    iframe { width:350; height:auto; margin-bottom:20px; border:none; }
+	.download{
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+	.icon{
+    position: fixed;
+    top: ;
+    right: ;
+    z-index:1100 ;
+  </style>
+</head>
+<body>
+<a href = "naruto.html" class = "icon"><img src = "icon1.png" style = "height:40px"></a>
+<a href = "downloadpage.html" class = "download"><img src = "download-icon.png" style = "height:40px"></a>
+<h2 style = "text-align:center">ATTACK ON TITAN</h2><hr><hr><br>
+<div id="videos"></div>
+
+<script>
+alert("ভিডিও লোড হতে সময় লাগতে পারে, ভিডিও পেতে কিছুক্ষন অপেক্ষা করুন।")
+fetch("https://script.google.com/macros/s/AKfycbzgTPt9Sf-C_nCcJbPktEW4uyhH2UbRKbiluT8wtailDpvJRkCLdgQBLZ2VwKYGTkUVwA/exec")
+.then(res => res.json())
+.then(data => {
+  const container = document.getElementById("videos");
+  data.forEach(v => {
+    container.innerHTML += `
+      <h4>${v.name}</h4>
+      <iframe src="${v.embed}" allow="autoplay"></iframe>
+    `;
+  });
+});
+</script>
+
+</body>
+</html>
